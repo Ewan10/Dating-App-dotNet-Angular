@@ -1,0 +1,9 @@
+<p>Dating Application</p>
+
+<ul>
+    @for (user of users; track user.id) {
+    <li>
+        {{user.id}}: {{user.userName}}
+    </li>
+    }
+</ul>
