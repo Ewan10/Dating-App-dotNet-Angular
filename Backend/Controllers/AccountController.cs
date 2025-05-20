@@ -18,12 +18,18 @@ public class AccountController(DataContext context, ITokenService tokenService) 
 
         using var hmac = new HMACSHA512();
 
+#pragma warning disable CS8601 // Possible null reference assignment.
         var user = new User
         {
             UserName = registerDto.Username.ToLower(),
             PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password)),
-            PasswordSalt = hmac.Key
+            PasswordSalt = hmac.Key,
+            City = registerDto.City,
+            Country = registerDto.Country,
+            KnownAs = registerDto.KnownAs,
+            Gender = registerDto.Gender
         };
+#pragma warning restore CS8601 // Possible null reference assignment.
 
         context.Users.Add(user);
         await context.SaveChangesAsync();
@@ -39,7 +45,7 @@ public class AccountController(DataContext context, ITokenService tokenService) 
     public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
     {
         var user = await context.Users
-            .FirstOrDefaultAsync(x => x.UserName == loginDto.Username.ToLower());
+            .FirstOrDefaultAsync(x => x.UserName.ToLower() == loginDto.Username.ToLower());
 
         if (user == null) return Unauthorized("Invalid username");
 

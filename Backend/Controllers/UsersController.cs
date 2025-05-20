@@ -1,24 +1,25 @@
-using Backend.Data;
-using Backend.Entities;
+using Backend.DTOs;
+using Backend.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Controllers;
 
-
-public class UsersController(DataContext context) : BaseApiController
+public class UsersController(IUserRepository userRepository) : BaseApiController
 {
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+    public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers()
     {
-        var users = await context.Users.ToListAsync();
-        return users;
+        var users = await userRepository.GetMembersAsync();
+
+        // var users = await context.Users.ToListAsync();
+        return Ok(users);
     }
 
-    [HttpGet("{id:int}")]
-    public async Task<ActionResult<User>> GetUser(int id)
+    [HttpGet("{username}")]
+    public async Task<ActionResult<MemberDto>> GetUser(string username)
     {
-        var user = await context.Users.FindAsync(id);
+        var user = await userRepository.GetMemberAsync(username);
+        // var user = await context.Users.FindAsync(id);
 
         if (user == null)
         {
